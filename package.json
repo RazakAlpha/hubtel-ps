@@ -13,8 +13,9 @@
     "prepublish": "npm run build",
     "publish": "git push --tags && npm publish"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["hubtel","programmable","services"],
+  "author": "RazakAlpha",
+  "repository": {"type": "git", "url": "https://github.com/RazakAlpha/hubtel-ps.git"},
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^17.0.5",
