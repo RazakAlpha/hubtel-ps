@@ -2,12 +2,18 @@ import { Tracing } from "trace_events";
 import { threadId } from "worker_threads";
 import { DataTypes, FieldTypes, iMessageWithOptions, MessageWithOptions, ResponseTypes } from "../utilities";
 
+export interface IUSSDResponseItem {
+    ItemName: string;
+    Qty: number;
+    price: number;
+}
+
 export interface IUSSDResponse {
     SessionId?: string;
     Type: ResponseTypes;
     Message: string;
     Mask?: string;
-    Item?: Object;
+    Item?: IUSSDResponseItem[];
     ServiceCode?: string;
     Label: string;
     DataType: DataTypes;
@@ -25,7 +31,7 @@ export class USSDResponse implements IUSSDResponse {
     Type: ResponseTypes;
     Message: string;
     Mask?: string | undefined;
-    Item?: Object | undefined;
+    Item?: IUSSDResponseItem[] | undefined;
     ServiceCode?: string | undefined;
     Label: string;
     DataType: DataTypes;
