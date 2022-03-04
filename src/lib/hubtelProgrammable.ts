@@ -1,5 +1,5 @@
 import {ResponseTypes, DataTypes, FieldTypes } from '../utilities'
-import { SequnceHandler } from './sequenceHandler';
+import { SequenceHandler } from './sequenceHandler';
 import { UssdRequest } from './ussdRequest';
 import { USSDResponse } from './ussdResponse';
 
@@ -9,7 +9,7 @@ const db = new loki();
 export class HubtelProgrammable {
 
     _sequenceOffset: number = 0;
-    _handlers: SequnceHandler[] =[];
+    _handlers: SequenceHandler[] =[];
     _sequenceOffsetMap = new Map();
     _sessionData = new Map();
     _SessionMap = new Map();
@@ -21,7 +21,12 @@ export class HubtelProgrammable {
     constructor(maxDuration = 120000){}
 
 
- process(request: UssdRequest): USSDResponse{
+    /**
+     * 
+     * @param request UssdRequest UssdRequest sent by provider
+     * @returns Promise<USSDResponse>
+     */
+  async process(request: UssdRequest): Promise<USSDResponse>{
      // store session if new and set clean up period
         let storedSession: any;
         // console.log({request})
@@ -55,7 +60,9 @@ export class HubtelProgrammable {
 
     }
 
-    const response: USSDResponse = handler.action();
+    handler.ussdRequest = request;
+    const response: USSDResponse =  await handler.action(request);
+    console.log({response})
     //Automatically set sessionId and Platform data
     response.SessionId =request.SessionId;
     response.Platform = request.Platform;
@@ -79,8 +86,16 @@ export class HubtelProgrammable {
     this._sessionManager.findAndRemove({id: sessionId});
  }
 
- addHandler(handler : SequnceHandler){
+ addHandler(handler : SequenceHandler){
     this._handlers.push(handler)
+ }
+
+ addHandlers(handlers : SequenceHandler[]){
+    this._handlers =  this._handlers.concat(handlers);
+ }
+
+ clearHandlers(){
+    this._handlers =  [];
  }
 
      

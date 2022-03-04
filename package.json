@@ -1,7 +1,7 @@
 {
-  "name": "hubtelprogrammable",
+  "name": "hubtel-ps",
   "version": "1.0.0",
-  "description": "",
+  "description": "hubtel progammable services",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
