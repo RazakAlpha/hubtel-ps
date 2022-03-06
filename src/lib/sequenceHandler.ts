@@ -1,8 +1,8 @@
 import { ResponseTypes } from "../utilities";
-import { UssdRequest } from "./ussdRequest";
-import { USSDResponse } from "./ussdResponse";
+import { Request } from "./ussdRequest";
+import { Response } from "./ussdResponse";
 
-type HandlerFunction = (arg?: UssdRequest) => USSDResponse;
+type HandlerFunction = (arg?: Request) => Response;
 
 export interface ISequenceHandler {
     SequenceIds: number[];
@@ -16,7 +16,7 @@ export class SequenceHandler implements ISequenceHandler {
     stateData?: string;
     action: HandlerFunction;
     
-    private _ussdRequest!: UssdRequest;
+    private _ussdRequest!: Request;
 
     constructor(SequenceIds: number[], stateData: string | undefined, action: HandlerFunction) {
         this.SequenceIds = SequenceIds;
@@ -26,17 +26,17 @@ export class SequenceHandler implements ISequenceHandler {
 
     }
 
-    get  response() : USSDResponse {
+    get  response() : Response {
         return  this.action(this.ussdRequest);
     }
 
-    set ussdRequest(request: UssdRequest){
+    set ussdRequest(request: Request){
         this._ussdRequest = request;
         // this.action.arguments = this._ussdRequest;
     }
 
     
-    public get ussdRequest() : UssdRequest {
+    public get ussdRequest() : Request {
         return this._ussdRequest;
     }
     

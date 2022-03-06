@@ -2,8 +2,8 @@ import { Collection } from 'lokijs';
 import {ResponseTypes, DataTypes, FieldTypes, IPaymentProcessingResults, ServiceStatus } from '../utilities'
 import { IPaymentCallback, PaymentCallback } from './paymentRequest';
 import { SequenceHandler } from './sequenceHandler';
-import { UssdRequest } from './ussdRequest';
-import { USSDResponse } from './ussdResponse';
+import { Request } from './ussdRequest';
+import { Response } from './ussdResponse';
 
 const loki = require('lokijs')
 const db = new loki();
@@ -35,7 +35,7 @@ export class HubtelProgrammable {
      * @param request UssdRequest UssdRequest sent by provider
      * @returns Promise<USSDResponse>
      */
-  async process(request: UssdRequest): Promise<USSDResponse>{
+  async process(request: Request): Promise<Response>{
      // store session if new and set clean up period
         let storedSession: any;
         // console.log({request})
@@ -75,7 +75,7 @@ export class HubtelProgrammable {
     }
 
     handler.ussdRequest = request;
-    const response: USSDResponse =  await handler.action(request);
+    const response: Response =  await handler.action(request);
    //  console.log({response})
     //Automatically set sessionId and Platform data
     response.SessionId =request.SessionId;
@@ -88,7 +88,7 @@ export class HubtelProgrammable {
  }
 
  // ONLY ADD INITIATION REQUESTS
- addSession(request: UssdRequest){
+ addSession(request: Request){
      return this._sessionManager.insert({id: request.SessionId, expireAt: new Date(new Date().getTime() + 1*1*1*60*1000), sequence: 0});
  }
 
@@ -135,8 +135,8 @@ getSessionData(sessionId: string){
  }
 
      
- public get errorResponse() : USSDResponse {
-    return new USSDResponse({
+ public get errorResponse() : Response {
+    return new Response({
         Type: ResponseTypes.release,
         Message: 'Unhandled error occurred',
         Label: 'Sorry, Unhandled error occurred whiles performing operation',

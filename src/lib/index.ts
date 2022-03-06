@@ -1,5 +1,5 @@
 import { HubtelProgrammable } from "./hubtelProgrammable";
-import { UssdRequest } from "./ussdRequest";
+import { Request } from "./ussdRequest";
 
 export * from './ussdRequest'
 export * from './ussdResponse'
@@ -21,7 +21,7 @@ export function getSessionData(sessionId: string){
    return _hubtelProgrammable.getSessionData(sessionId);
  }
 
-export function processRequest(ussdRequest: UssdRequest){
+export function processRequest(ussdRequest: Request){
     return _hubtelProgrammable.process(ussdRequest);
 }
 

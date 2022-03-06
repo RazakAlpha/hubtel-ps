@@ -1,6 +1,6 @@
 import { ResponseTypes } from "../utilities";
 
-export interface IUssdRequest {
+export interface IRequest {
     Type: ResponseTypes;
     Message: string;
     ServiceCode: string;
@@ -13,7 +13,7 @@ export interface IUssdRequest {
 
 }
 
-export class UssdRequest  {
+export class Request  {
     Type: ResponseTypes = ResponseTypes.response;
     Message: string = '';
     ServiceCode: string = '';
@@ -24,7 +24,7 @@ export class UssdRequest  {
     Sequence: Number;
     Platform: string  = '';
 
-    constructor(request: IUssdRequest) {
+    constructor(request: IRequest) {
         this.Type = request.Type;
         this.Message = request.Message;
         this.ServiceCode = request.ServiceCode;

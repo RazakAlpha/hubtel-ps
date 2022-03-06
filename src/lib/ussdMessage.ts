@@ -1,6 +1,6 @@
 import { iMessageWithOptions, MessageWithOptions } from "../utilities";
 
-export class HubtelUSSDMessage {
+export class HubtelMessage {
 
     _message: MessageWithOptions;
 

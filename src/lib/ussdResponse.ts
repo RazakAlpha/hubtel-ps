@@ -2,18 +2,18 @@ import { Tracing } from "trace_events";
 import { threadId } from "worker_threads";
 import { DataTypes, FieldTypes, iMessageWithOptions, MessageWithOptions, ResponseTypes } from "../utilities";
 
-export interface IUSSDResponseItem {
+export interface IResponseItem {
     ItemName: string;
     Qty: number;
     price: number;
 }
 
-export interface IUSSDResponse {
+export interface IResponse {
     SessionId?: string;
     Type: ResponseTypes;
     Message: string;
     Mask?: string;
-    Item?: IUSSDResponseItem[];
+    Item?: IResponseItem[];
     ServiceCode?: string;
     Label: string;
     DataType: DataTypes;
@@ -25,13 +25,13 @@ export interface IUSSDResponse {
     
 }
 
-export class USSDResponse implements IUSSDResponse {
+export class Response implements IResponse {
 
     SessionId?: string;
     Type: ResponseTypes;
     Message: string;
     Mask?: string | undefined;
-    Item?: IUSSDResponseItem[] | undefined;
+    Item?: IResponseItem[] | undefined;
     ServiceCode?: string | undefined;
     Label: string;
     DataType: DataTypes;
@@ -42,7 +42,7 @@ export class USSDResponse implements IUSSDResponse {
     Platform?: string = 'USSD';
 
 
-    constructor (response: IUSSDResponse ) {
+    constructor (response: IResponse ) {
 
         // if(!response.SessionId){
         //     throw new Error('Type is Required')
