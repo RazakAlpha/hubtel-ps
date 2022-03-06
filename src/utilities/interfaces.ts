@@ -1,5 +1,11 @@
 import { stringify } from "querystring";
 
+export enum ServiceStatus{
+    successs = "success",
+    failed = "failed",
+    unknown = "unknown"
+}
+
 export enum ResponseTypes{
     initiation ='Initiation',
     response ='Response',
@@ -49,6 +55,14 @@ export class MessageWithOptions implements iMessageWithOptions {
         }
         return messageText;
     }
+
+}
+
+export interface IPaymentProcessingResults {
+    SessionId: string;
+    OrderId: string;
+    "ServiceStatus": ServiceStatus;
+    ExtraData: any;
 
 }
 

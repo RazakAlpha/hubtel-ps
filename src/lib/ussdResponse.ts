@@ -125,7 +125,7 @@ export class USSDResponse implements IUSSDResponse {
             }
         }
 
-        console.log({messageText});
+        // console.log({messageText});
         return messageText;
     }
 
