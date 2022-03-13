@@ -38,10 +38,11 @@ export class HubtelProgrammable {
   async process(request: Request): Promise<Response>{
      // store session if new and set clean up period
         let storedSession: any;
-        // console.log({request})
+        console.log({request})
 
         if(request.Type === ResponseTypes.initiation){
             storedSession =  this.addSession(request);
+
         }else {
         //GET SESSION DATA STORED
         storedSession = this.getSessionData(request.SessionId);
@@ -60,6 +61,9 @@ export class HubtelProgrammable {
       //   console.log({storedSession});
 
         this._sessionManager.update(storedSession);
+        console.log("🚀 ~ file: hubtelProgrammable.ts ~ line 64 ~ HubtelProgrammable ~ process ~ storedSession", storedSession)
+
+        
         }
 
       //   console.log({storedSession});
@@ -89,7 +93,7 @@ export class HubtelProgrammable {
 
  // ONLY ADD INITIATION REQUESTS
  addSession(request: Request){
-     return this._sessionManager.insert({id: request.SessionId, expireAt: new Date(new Date().getTime() + 1*1*1*60*1000), sequence: 0});
+     return this._sessionManager.insert({id: request.SessionId, expireAt: new Date(new Date().getTime() + 1*1*1*60*1000), sequence: request.Sequence});
  }
 
  removeSessions(){
