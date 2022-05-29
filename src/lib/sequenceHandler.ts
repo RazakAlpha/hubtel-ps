@@ -49,11 +49,11 @@ export class SequenceHandler implements ISequenceHandler {
 
     validForSequence(sequence: number, inputValue: string ): boolean{
         // console.log('state data' , this.stateData, typeof(this.stateData), inputValue)
-        if (this.stateData && Array.isArray(this.stateData)){
+        if (this.stateData && Array.isArray(this.stateData) && inputValue){
             // console.log('valid for sequence1', this.SequenceIds.includes(sequence) && this.stateData === inputValue);
             return this.SequenceIds.includes(sequence) && this.stateData.includes(inputValue) //Match  valid sequence IDs and stateData (compare with user input)
 
-        } else if(this.stateData){
+        } else if(this.stateData && inputValue){
             return this.SequenceIds.includes(sequence) && this.stateData === inputValue //Match  valid sequence IDs and stateData (compare with user input)
         }else{
             // console.log('valid for sequence', this.SequenceIds.includes(sequence));

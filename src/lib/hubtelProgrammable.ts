@@ -1,14 +1,14 @@
 import { Collection } from 'lokijs';
 import {ResponseTypes, DataTypes, FieldTypes, IPaymentProcessingResults, ServiceStatus } from '../utilities'
-import { IPaymentCallback, PaymentCallback } from './paymentRequest';
+import { IPaymentRequest, PaymentRequest } from './paymentRequest';
 import { SequenceHandler } from './sequenceHandler';
 import { Request } from './ussdRequest';
-import { Response } from './ussdResponse';
+import { IResponseData, Response } from './ussdResponse';
 
 const loki = require('lokijs')
 const db = new loki();
 
-type paymentCallbackFunction = (arg?: PaymentCallback) => IPaymentProcessingResults;
+type paymentCallbackFunction = (arg?: PaymentRequest) => IPaymentProcessingResults;
 
 export class HubtelProgrammable {
 
@@ -54,16 +54,30 @@ export class HubtelProgrammable {
 
         storedSession.sequence = request.Sequence;
 
+      //   SAVING USER INPUT FOR FUTURE QUERY
         if(request.ClientState){ // save the user input of the clientState was set
-           storedSession[request.ClientState] = request.Message;
+
+         // IF SELECTLIST EXIST ON STOREDDATA, THE EXTRACT THE VALUE FOR SAVING
+         if(storedSession.selectList && storedSession.selectList.length > 0){ 
+            //SELECTEDLIST IS SET WHEN A RESPONSE IS CREATED WITH DATA OPTIONS
+            //FILTER SELECTED IF INPUT IS EQUAL TO INDEX+1 OR VALUE OF LIST ITEM
+            const selected = storedSession.selectList.find((el:IResponseData, index: number) => index+1 === Number(request.Message) || String(el.Value).toLowerCase() ===String(request.Message).toLowerCase())
+           if (selected){
+            storedSession[request.ClientState] = String(selected.Value).toLowerCase(); // STOREDSESSION.CLIENTSTATE = 'SOMETHING'
+           storedSession['currentSelection'] = String(selected.Value).toLowerCase(); // STOREDSESSION.CURRENTSELECTION = 'SOMETHING'
+           }
+
+        }else{ //IF NO SELECTED LIST WAS SET THEN SAVE THE USER INPUT AS IT IS
+         storedSession[request.ClientState] = request.Message;
+         storedSession['currentSelection'] = undefined; // CLEAR CURRENT SELECTION
+
         }
+      }
 
       //   console.log({storedSession});
 
         this._sessionManager.update(storedSession);
-        console.log("🚀 ~ file: hubtelProgrammable.ts ~ line 64 ~ HubtelProgrammable ~ process ~ storedSession", storedSession)
-
-        
+        console.log("🚀 ~ file: hubtelProgrammable.ts ~ line 64 ~ HubtelProgrammable ~ process ~ storedSession", storedSession);
         }
 
       //   console.log({storedSession});
@@ -71,7 +85,9 @@ export class HubtelProgrammable {
        
 
     // find valid handler;
-    const handler = this._handlers.find(el => el.validForSequence(storedSession.sequence, request.Message))
+    // USES CURRENT SELECTION OBTAINED FROM USER INPUT
+    const handler = this._handlers.find(el => el.validForSequence(storedSession.sequence, storedSession.currentSelection));
+
     if(!handler) {
         console.error("All sequences must have a handler assigned");
         return this.errorResponse;
@@ -80,11 +96,13 @@ export class HubtelProgrammable {
 
     handler.ussdRequest = request;
     const response: Response =  await handler.action(request);
-   //  console.log({response})
-    //Automatically set sessionId and Platform data
-    response.SessionId =request.SessionId;
+   console.log({handler})
+   //Automatically set sessionId and Platform data
+    response.SessionId = request.SessionId;
     response.Platform = request.Platform;
-    response.formatMessage()
+    storedSession.selectList = response.Data && response.Data.length > 0? response.Data: undefined; // SAVE THE DATA AS THE SELECTLIST FOR ACCESS ON NEXT SEQUENCE
+    response.formatMessage();
+
 
     return response;
 
@@ -125,8 +143,8 @@ getSessionData(sessionId: string){
    return this._sessionManager.findOne({id: sessionId});
  }
 
- async processPayment(paymentRequest: IPaymentCallback, callbackFn: paymentCallbackFunction){
-    const payement = new PaymentCallback(paymentRequest);
+ async processPayment(paymentRequest: IPaymentRequest, callbackFn: paymentCallbackFunction){
+    const payement = new PaymentRequest(paymentRequest);
     const res = await callbackFn(payement);
    //  console.log({res})
     if (!res.ServiceStatus){
@@ -135,6 +153,17 @@ getSessionData(sessionId: string){
     res.SessionId = paymentRequest.SessionId;
     res.OrderId = paymentRequest.OrderId;
     return res
+
+ }
+
+ getUserInput(sessionId: string, key: string){
+    const storedSession = this.getSessionData(sessionId);
+   return  storedSession.selectedList.find((el:IResponseData, index: number) => String(el.Value) ===key)
+ }
+
+ set selectList(param: {sessionId: string, data: IResponseData[]}){
+   const storedSession = this.getSessionData(param.sessionId);
+   storedSession.selectList = param.data;
 
  }
 

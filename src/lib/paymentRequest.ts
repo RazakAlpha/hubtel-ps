@@ -1,4 +1,4 @@
-export interface IPaymentCallback {
+export interface IPaymentRequest {
     OrderId: string;
     SessionId: string;
     ExtraData: any;
@@ -34,13 +34,13 @@ export interface IOrderInfoPayment{
     PaymentDate: Date
 }
 
-export class PaymentCallback implements IPaymentCallback {
+export class PaymentRequest implements IPaymentRequest {
     OrderId: string;
     SessionId: string;
     ExtraData: any;
     OrderInfo: IOrderInfo;
 
-    constructor(paymentRequest: IPaymentCallback){
+    constructor(paymentRequest: IPaymentRequest){
         this.OrderId = paymentRequest.OrderId;
         this.SessionId = paymentRequest.SessionId;
         this.ExtraData = paymentRequest.ExtraData;

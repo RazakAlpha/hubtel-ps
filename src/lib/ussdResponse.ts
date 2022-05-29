@@ -1,5 +1,4 @@
-import { Tracing } from "trace_events";
-import { threadId } from "worker_threads";
+
 import { DataTypes, FieldTypes, iMessageWithOptions, MessageWithOptions, ResponseTypes } from "../utilities";
 
 export interface IResponseItem {
@@ -25,6 +24,10 @@ export interface IResponse {
     
 }
 
+export interface IResponseData {
+    Display: string, Value?: string, Amount?: number
+}
+
 export class Response implements IResponse {
 
     SessionId?: string;
@@ -35,7 +38,7 @@ export class Response implements IResponse {
     ServiceCode?: string | undefined;
     Label: string;
     DataType: DataTypes;
-    Data?: {Display: string, Value?: string, Amount?: number}[];
+    Data?: IResponseData[];
     FieldType: FieldTypes;
     Sequence?: number | undefined;
     ClientState?: string | undefined;
@@ -96,6 +99,8 @@ export class Response implements IResponse {
             this.Data = [];
         }else{
             this.Data = response.Data;
+            // Set the SelectList Option of the SessionData
+            // SELECT LIST IS SET AUTOMATICALLY BEFORE RESPONSE IS SENT FROM MAIN CLASS
         }
 
         if (response.Platform === 'USSD'){
@@ -121,8 +126,8 @@ export class Response implements IResponse {
 
         if(this.Data && this.Data.length > 0 ){
             for (var i = 1; i <= this.Data.length; i++) {
-                messageText = messageText + this.Data[i - 1].Value + '. ' + this.Data[i - 1].Display + '\n';
-            }
+                messageText = messageText + i  + '. ' + this.Data[i - 1].Display + '\n'; // Use index as Value for selection instead of data.value
+            } 
         }
 
         // console.log({messageText});
@@ -132,7 +137,7 @@ export class Response implements IResponse {
     //Set the value of message after Platform is set since platform is not accessible at the time of creating handler
     formatMessage(){
         if (this.Platform === 'USSD'){
-            this.Message = this.messageStringify;
+            this.Message = this.messageStringify; // ADD SELECT OPTION IF THERE IS DATA ATTACHED
         }
     }
 
